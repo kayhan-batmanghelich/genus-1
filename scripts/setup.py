@@ -71,10 +71,8 @@ def main():
     def move_files(data_dir, new_path):
         files = [x for x in os.listdir(data_dir) if '.bim' not in x]
         for f in files:
-            shutil(
-                os.path.join(data_dir, f),
-                os.path.join(new_path, f)
-            )
+            shutil(os.path.join(data_dir, f),
+                   os.path.join(new_path, f))
         return None
 
     def make_hdf(data_dir):
