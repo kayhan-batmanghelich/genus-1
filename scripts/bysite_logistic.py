@@ -86,7 +86,9 @@ for name, group in groups:
     model_data = pd.concat([brain_data, age, encoded], axis=1)
     try:
         results[name] = logistic(X = model_data,
-                                 y = ,
+                                 y = res(group['GROUP']),
                                  splits = 4)
     except ValueError:
         results[name] = 'No variance in population'
+
+np.save('per_site_results.npy', results)
