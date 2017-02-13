@@ -3,6 +3,8 @@ import numpy as np
 import pandas as import pd
 from subprocess import call
 import h5py
+import argparse
+import shutil
 
 def main():
 
@@ -51,7 +53,7 @@ def main():
         s = snpm[['chrom', 'snpid', 'gd', 'pp', 'a1', 'a2']]
         return s
 
-    def make_new_bim(snp_reduced, data_dir):
+    def make_new_bim(snp_reduced, data_dir, out_path):
         files = [x for x in os.listdir(data_dir) \
                 if (('bgn' in x) and ('.bim' in x) \
                 and (x[0] != '.'))]
@@ -60,9 +62,19 @@ def main():
             try:
                 bfile = read_bim(os.path.join(data_dir, bfile))
                 match(snp_reduced, bfile).to_csv(
-                    '{}'.format(bfile), sep='\t', index=None, header=None)
+                    '{}'.format(out_path + "/" + bfile),
+                    sep='\t', index=None, header=None)
             except IOError:
                 pass
+        return None
+
+    def move_files(data_dir, new_path):
+        files = [x for x in os.listdir(data_dir) if '.bim' not in x]
+        for f in files:
+            shutil(
+                os.path.join(data_dir, f),
+                os.path.join(new_path, f)
+            )
         return None
 
     def make_hdf(data_dir):
@@ -76,16 +88,39 @@ def main():
         return None
 
     def read_fam(data):
-       fam = pd.read_csv(data, header=None, sep=' ')
-       fam.columns = ['FID','IID', 'pid', 'mid', 'sex', 'affected']
-       return fam
+        fam = pd.read_csv(data, header=None, sep=' ')
+        fam.columns = ['FID', 'IID', 'pid', 'mid', 'sex', 'affected']
+        return fam
 
     def read_hdf(data):
         h5 = h5py.File(data)['genotype']
         h5df = pd.DataFrame(np.transpose(h5))
         return h5df
 
-   def combine_hdf():
-           
+    def combine_hdf(fam_dir):
+        hdf_frames = []
+        hdf_dir = os.listdir('.')
+        files = [x[:-3] for x in hdf_dir]
+        for hdf_file in files:
+            hdf = read_hdf(os.path.join(hdf_dr, + hdf_file + '_h5'))
+            fam = read_fam(os.path.join(fam_fir, + hdf_file, + '.fam'))
+            hdf[id_name] = fam.id_name
+            hdf_frames.append(hdf)
+        return pd.concat(hdf_frames)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", help="path to .bim/.bam/.fam files", type=str)
+parser.add_argument("-snp", help="path to snp text file", type=str)
+parser.add_argument("-id_name", help="name of ID variable for matching", type=str)
+parser.add_argument("-nbo", help="new bim output path", type=str)
+parser.add_argument("-base_path", help="base path", type=str)
+parser.add_argument("-move_path", help="will create directory to move files to", type=str)
+args = parser.parse_args()
+data_path = args.d
+snp_path = args.snp
+id_name = args.id_name
+nbo = args.nbo
+base_path = args.base_path
+move_path = args.move_path
 
 main()
