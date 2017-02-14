@@ -10,9 +10,6 @@ class Match(object):
         self.id_var = id_var
         self.sep = sep
 
-    data_store_types = ('Hierarchical Data Format',
-                        'ASCII', 'Matlab', 'mat-file')
-
     def inter(self, loi):
         return list(set(loi[0]).intersection(*loi))
 
