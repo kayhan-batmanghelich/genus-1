@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import magic
+import argparse
 
 class Match(object):
-    def __init__(self, brain, genomic, cognitive, id_var, sep):
+    def __init__(self, brain, genomic, cognitive, id_var, sep = None):
         self.brain = brain
         self.genmoic = genomic,
         self.cognitive = cognitive
@@ -17,6 +18,7 @@ class Match(object):
 
     def get_matching_ids(self, id_var, b, c, g):
         id_var_inter = inter([val.columns.values for val in (b, c, g)])
+
         if not id_var_inter[0] == id_var:
             raise Exception("Some input data is missing ID variable")
         else:
@@ -28,7 +30,9 @@ class Match(object):
         if 'Hierarchical Data Format' in dl:
             return pd.read_hdf(data)
         elif 'ASCII' in dl:
-            return pd.read_csv(data, sep = sep)
+            if not self.sep:
+                return pd.read_csv(data, sep = self.sep)
+            return pd.read_csv(data, sep =s ep)
         elif 'Matlab' or 'mat-file' in dl:
             return scipy.io.loadmat(data)
 
@@ -36,10 +40,11 @@ class Match(object):
         return data.set_index(id_var).loc(ids)
 
     def out(self, id_var, b, c, g, ids):
-        
-        data = {'b': self.brain, 'c': self.cognitive, 'g': self.genomic}
+        data = {'b': self.load(self.brain), 'c': self.load(self.cognitive),
+                'g': self.load(self.genomic)}
+
         ids = get_matching_ids(self.id_var, **data)
 
-        return (index(self.id_var, self.brain, self.id_var),
-                index(self.id_var, self.cognitive, self.id_var),
-                index(self.id_var, self.genomic, self.id_var))
+        return (index(self.id_var, data['b'], ids),
+                index(self.id_var, data['c'], ids),
+                index(self.id_var, data['g'], ids))
