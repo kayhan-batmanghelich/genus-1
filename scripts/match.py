@@ -38,7 +38,7 @@ class Match(object):
             return scipy.io.loadmat(data)
 
     def index(self, id_var, data, ids):
-        return data.set_index(id_var).loc(ids)
+        return data.set_index(id_var, 1).loc[ids]
 
     def out(self):
         data = {
