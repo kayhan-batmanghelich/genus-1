@@ -31,7 +31,7 @@ class Match(object):
         elif 'ASCII' in dl:
             if not self.sep:
                 return pd.read_csv(data, sep = self.sep)
-            return pd.read_csv(data, sep =s ep)
+            return pd.read_csv(data, sep = sep)
         elif 'Matlab' or 'mat-file' in dl:
             return scipy.io.loadmat(data)
 
