@@ -5,7 +5,7 @@ import magic
 class Match(object):
     def __init__(self, brain, genomic, cognitive, id_var, sep = None):
         self.brain = brain
-        self.genmoic = genomic,
+        self.genomic = genomic,
         self.cognitive = cognitive
         self.id_var = id_var,
         self.sep = sep
@@ -24,21 +24,22 @@ class Match(object):
             reduce_n = inter([val[id_var_inter[0]] for val in (b, c, g)])
             return reduce_n
 
-    def load(self, data, sep = ','):
+    def load(self, data):
         dl = magic.from_file(data)
+        print dl
         if 'Hierarchical Data Format' in dl:
             return pd.read_hdf(data)
         elif 'ASCII' in dl:
             if not self.sep:
                 return pd.read_csv(data, sep = self.sep)
-            return pd.read_csv(data, sep = sep)
+            return pd.read_csv(data)
         elif 'Matlab' or 'mat-file' in dl:
             return scipy.io.loadmat(data)
 
     def index(self, id_var, data, ids):
         return data.set_index(id_var).loc(ids)
 
-    def out(self, id_var, b, c, g, ids):
+    def out(self):
         data = {'b': self.load(self.brain), 'c': self.load(self.cognitive),
                 'g': self.load(self.genomic)}
 
