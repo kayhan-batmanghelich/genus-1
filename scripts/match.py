@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import magic
-import argparse
 
 class Match(object):
     def __init__(self, brain, genomic, cognitive, id_var, sep = None):
