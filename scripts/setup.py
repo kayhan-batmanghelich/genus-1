@@ -104,21 +104,29 @@ def main():
             fam = read_fam(os.path.join(fam_fir, + hdf_file, + '.fam'))
             hdf[id_name] = fam.id_name
             hdf_frames.append(hdf)
-        return pd.concat(hdf_frames)
+        pd.concat(hdf_frames).to_hdf('{}'.format(x[:-3] + '.hdf'))
+        return None
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-d", help="path to .bim/.bam/.fam files", type=str)
-parser.add_argument("-snp", help="path to snp text file", type=str)
-parser.add_argument("-id_name", help="name of ID variable for matching", type=str)
-parser.add_argument("-nbo", help="new bim output path", type=str)
-parser.add_argument("-base_path", help="base path", type=str)
-parser.add_argument("-move_path", help="will create directory to move files to", type=str)
-args = parser.parse_args()
-data_path = args.d
-snp_path = args.snp
-id_name = args.id_name
-nbo = args.nbo
-base_path = args.base_path
-move_path = args.move_path
+    make_new_bim(snp_pgc_match(snp_overlap(snp_path), rsnp, 100000), data_path)
+    move_files(data_path, move_path)
+    make_hdf(move_path)
+    combine_hdf(move_path)
 
-main()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", help="path to .bim/.bam/.fam files", type=str)
+    parser.add_argument("-snp", help="path to snp text file", type=str)
+    parser.add_argument("-rsnp", help="path to file to reduce snps", type=str)
+    parser.add_argument("-id_name", help="name of ID variable for matching", type=str)
+    parser.add_argument("-nbo", help="new bim output path", type=str)
+    parser.add_argument("-base_path", help="base path", type=str)
+    parser.add_argument("-move_path", help="will create directory to move files to", type=str)
+    args = parser.parse_args()
+    data_path = args.d
+    snp_path = args.snp
+    rsnp_path = args.rsnp
+    id_name = args.id_name
+    nbo = args.nbo
+    base_path = args.base_path
+    move_path = args.move_path
+    main()
