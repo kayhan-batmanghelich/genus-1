@@ -4,10 +4,10 @@ import magic
 
 class Match(object):
     def __init__(self, brain, genomic, cognitive, id_var, sep = None):
-        self.brain = brain,
-        self.genomic = genomic,
-        self.cognitive = cognitive,
-        self.id_var = id_var,
+        self.brain = brain
+        self.genomic = genomic
+        self.cognitive = cognitive
+        self.id_var = id_var
         self.sep = sep
 
     data_store_types = ('Hierarchical Data Format',
@@ -47,8 +47,8 @@ class Match(object):
         'g': self.load(self.genomic)
         }
 
-        ids = get_matching_ids(self.id_var, **data)
+        ids = self.get_matching_ids(self.id_var, **data)
 
-        return (index(self.id_var, data['b'], ids),
-                index(self.id_var, data['c'], ids),
-                index(self.id_var, data['g'], ids))
+        return (self.index(self.id_var, data['b'], ids),
+                self.index(self.id_var, data['c'], ids),
+                self.index(self.id_var, data['g'], ids))
