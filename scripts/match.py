@@ -17,12 +17,12 @@ class Match(object):
         return list(set(loi[0]).intersection(*loi))
 
     def get_matching_ids(self, id_var, b, c, g):
-        id_var_inter = inter([val.columns.values for val in [b, c, g]])
+        id_var_inter = self.inter([val.columns.values for val in (b, c, g)])
 
         if not id_var_inter[0] == id_var:
             raise Exception("Some input data is missing ID variable")
         else:
-            reduce_n = inter([val[id_var_inter[0]] for val in [b, c, g]])
+            reduce_n = self.inter([val[id_var_inter[0]] for val in (b, c, g)])
             return reduce_n
 
     def load(self, data):
