@@ -8,4 +8,8 @@
     c = 'cognitive/GENUS_neuropsych_data_Domain_Scores.csv'
     m = Match(b, c, g, 'IID')
     brain, cog, gene = Match.out()
+### summary.py
+    from summary import Summary
+    s = Summary(brain, ('group', 'sex'))
+    results = s.fit()
     
