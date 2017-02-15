@@ -2,10 +2,11 @@ import numpy as np
 import pandas as pd
 
 class Summary(object):
-    def __init__(self, data):
-        self.data = data
 
     sex_cols = ('sex', 'gender', 'male', 'female')
+
+    def __init__(self, data):
+        self.data = data
 
     def loc(self):
         locs = []
@@ -28,6 +29,3 @@ class Summary(object):
         rd['nan'] = nan
         rd['nsex'] = num_sex
         return rd
-
-    def fit(self):
-        return self.intermediate(self.loc())
