@@ -3,10 +3,10 @@ import pandas as pd
 import magic
 
 class Match(object):
-    def __init__(self, brain, genomic, cognitive, id_var, sep = None):
+    def __init__(self, brain, cognitive, genomic, id_var, sep = None):
         self.brain = brain
-        self.genomic = genomic
         self.cognitive = cognitive
+        self.genomic = genomic
         self.id_var = id_var
         self.sep = sep
 
