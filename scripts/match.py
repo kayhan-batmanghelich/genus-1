@@ -15,7 +15,6 @@ class Match(object):
 
     def get_matching_ids(self, id_var, b, c, g):
         id_var_inter = self.inter([val.columns.values for val in (b, c, g)])
-
         if not id_var_inter[0] == id_var:
             raise Exception("Some input data is missing ID variable")
         else:
