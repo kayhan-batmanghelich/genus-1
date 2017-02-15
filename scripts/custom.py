@@ -1,5 +1,7 @@
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
+import numpy as np
+import pandas as pd
 
 def encode(data):
     encoded_label = data.name

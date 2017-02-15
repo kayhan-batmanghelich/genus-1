@@ -1,7 +1,5 @@
-EstimatedTotalIntraCranialVol
 GROUP
 SEX
-AGE_MRI
 HANDED
 FS_VERSION
 PIPELINE
