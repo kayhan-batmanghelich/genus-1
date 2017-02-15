@@ -18,5 +18,5 @@ class Summary(object):
         rd = {i:li.count(i) for i in li}
         return rd
 
-    def fit(self):
+    def amount(self):
         return self.loc()
