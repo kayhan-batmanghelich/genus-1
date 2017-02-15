@@ -20,4 +20,7 @@ def remove_redudant(encoded):
             to_drop.append(encoded.columns[col])
     return encoded.drop(to_drop,axis=1)
 
-
+def reidx(df):
+    df1 = df.copy()
+    df1.index = [x for x in range(df.shape[0])]
+    return df1
