@@ -21,9 +21,9 @@ def logistic(X, y, splits):
                 cv = cv_in,
                 penalty = 'l1',
                 solver = 'liblinear'))])
-    clf.fit(X[train], y[train])
-    results['auc'].append(roc_auc_score(y[test], clf.predict(X[test])))
-    results['coef'].append(clf.named_steps['lgr'].coef_)
+        clf.fit(X[train], y[train])
+        results['auc'].append(roc_auc_score(y[test], clf.predict(X[test])))
+        results['coef'].append(clf.named_steps['lgr'].coef_)
     return results
 
 data_columns = np.genfromtxt('genus/text_files_for_indexing/170_columns.txt', dtype=str)
@@ -37,6 +37,7 @@ data_use = data[data_columns]
 covar_use_encode = data[covar_encode]
 covar_use_noencode = data[covar_noencode]
 id_use = data[id_columns]
+group_use = pd.concat([data['GROUP'], id_use[['IID']]], axis=1)
 
 # make sure ids are matching and drop nans and duplicates
 covar_id1 = pd.concat([id_use[['IID']],
@@ -54,14 +55,31 @@ data_id['IID'] = data_id.index.values
 data_id = data_id.drop_duplicates(subset='IID')
 id_check = np.all(data_id.IID.values == cvars.IID.ix[:, 0].values)
 if not id_check:
-    raise Exception("IDs not the same, cannot continue")
+    print("IDs not the same")
 data_id = reidx(data_id.drop('IID', 1))
 cvars1 = reidx(cvars1)
 cvars2 = reidx(cvars2)
 temp_encode = []
-# first covariate is EstimatedTotalIntraCranialVol
 for col in cvars2.columns:
     temp_encode.append(encode(cvars2[col]))
 encoded_covar = pd.concat(temp_encode, axis=1)
 encoded_covar = remove_redudant(encoded_covar)
 covars = pd.concat([cvars1, encoded_covar], axis=1)
+group_use = group_use.set_index('IID').loc[cvars.IID.ix[:, 0].values]
+group_use['IID'] = group_use.index.values
+group_use = group_use.drop_duplicates('IID').drop('IID', 1)
+id_check = np.all(group_use.index.values == cvars.IID.ix[:, 0].values)
+group_use = reidx(group_use)
+if not id_check:
+    print("IDs not the same")
+
+def y(g):
+    return np.array([1. if i == 'Control' else 0. for i in g])
+
+response = y(group_use.values)
+
+model_data = pd.concat([data_id, covars], axis=1)
+
+out = logistic(X = model_data.values,
+               y = response,
+               splits=7)
