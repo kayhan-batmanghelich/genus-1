@@ -1,6 +1,4 @@
-# genus
-
-## For the scripts:
+## scripts:
 ### match.py
     from match import Match
     b = 'brain/GENUS_FS_ATLAS_D.csv'
