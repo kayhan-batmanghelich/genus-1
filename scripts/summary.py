@@ -8,10 +8,16 @@ class Summary(object):
 
     def loc(self):
         locs = []
-        cols = {i.lower():i for i in self.data.columns}
+        cols = {}
+        for i in self.data.columns:
+            if isinstance(i, (str, np.str)):
+                cols[i.lower()] = i
+            elif isinstance(i, (int, np.int, float, np.float64, np.float32)):
+                cols[i] = i
         for idx, val in enumerate(self.data.columns):
-            if val.lower() in self.cols:
-                locs.append((val, idx))
+            if isinstance(i, (str, np.str)):
+                if val.lower() in self.cols:
+                    locs.append((val, idx))
         loc = [i[1] for i in locs]
         slice = self.data[loc]
         li = [i for i in slice.values.flatten() if not pd.isnull(i)]
