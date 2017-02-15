@@ -8,6 +8,7 @@
     brain, cog, gene = Match.out()
 You will still have to test for duplicates
 * note that the index will be the ID
+
 ### summary.py
     from summary import Summary
     s = Summary(brain, ('group', 'sex'))
