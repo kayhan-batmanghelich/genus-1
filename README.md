@@ -11,5 +11,5 @@
 ### summary.py
     from summary import Summary
     s = Summary(brain, ('group', 'sex'))
-    results = s.fit()
+    results = s.amount()
     
