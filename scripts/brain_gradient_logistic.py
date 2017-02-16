@@ -37,16 +37,24 @@ data_use = data[data_columns]
 covar_use_encode = data[covar_encode]
 covar_use_noencode = data[covar_noencode]
 id_use = data[id_columns]
-
-# will update later
+combined = pd.concat([data_use, covar_use_encode, covar_use_noencode, id_use['IID']], axis=1)
+combined = combined.dropna().drop_duplicates('IID')
+brain = reidx(combined[data_columns])
+cvar1 = reidx(combined[covar_encode])
+cvar2 = reidx(combined[covar_noencode])
+response = data[['GROUP','IID']]
+response = response.set_index('IID', 1).loc[combined.IID].dropna()
+response['IID'] = response.index.values
+response = response.drop_duplicates('IID')
+temp_encode = []
+for col in cvar1.columns:
+    temp_encode.append(encode(cvar1[col]))
+encoded = reidx(remove_redudant(pd.concat(temp_encode, axis = 1)))
+encoded = pd.concat([encoded, cvar2], axis = 1)
 
 def y(g):
     return np.array([1. if i == 'Control' else 0. for i in g])
 
-response = y(group_use.values)
-
-model_data = pd.concat([data_id, covars], axis=1)
-
-out = logistic(X = model_data.values,
-               y = response,
-               splits=7)
+response = y(response['GROUP'].values)
+model_data = pd.concat([brain, encoded], axis = 1)
+out = logistic(X = model_data.values, y = response, splits = 7)
