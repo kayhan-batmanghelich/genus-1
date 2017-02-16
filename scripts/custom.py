@@ -26,3 +26,6 @@ def reidx(df):
     df1 = df.copy()
     df1.index = [x for x in range(df.shape[0])]
     return df1
+
+def get_nonzerocoef_cols(cols, dobj, idx_name, idx_num):
+    return cols[np.nonzero(dobj[idx_name][idx_num])[1]]
