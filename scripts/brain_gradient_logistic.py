@@ -9,6 +9,7 @@ from custom.custom import encode
 from custom.custom import res
 from custom.custom import remove_redudant
 from custom.custom import reidx
+from custon.custom import get_nonzerocoef_cols
 
 def logistic(X, y, splits):
     results = {'auc':[], 'coef':[]}
