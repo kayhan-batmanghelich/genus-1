@@ -37,41 +37,8 @@ data_use = data[data_columns]
 covar_use_encode = data[covar_encode]
 covar_use_noencode = data[covar_noencode]
 id_use = data[id_columns]
-group_use = pd.concat([data['GROUP'], id_use[['IID']]], axis=1)
 
-# make sure ids are matching and drop nans and duplicates
-covar_id1 = pd.concat([id_use[['IID']],
-                       covar_use_noencode],
-                       axis=1).dropna().drop_duplicates('IID')
-covar_id2 = pd.concat([id_use[['IID']],
-                       covar_use_encode],
-                       axis=1).dropna().drop_duplicates('IID')
-cvars = pd.concat([covar_id1, covar_id2], axis=1).dropna()
-cvars1 = cvars[covar_noencode]
-cvars2 = cvars[covar_encode]
-data_id = pd.concat([id_use[['IID']], data_use], axis=1)
-data_id = data_id.set_index('IID', 1).loc[cvars.IID.ix[:, 0]]
-data_id['IID'] = data_id.index.values
-data_id = data_id.drop_duplicates(subset='IID')
-id_check = np.all(data_id.IID.values == cvars.IID.ix[:, 0].values)
-if not id_check:
-    print("IDs not the same")
-data_id = reidx(data_id.drop('IID', 1))
-cvars1 = reidx(cvars1)
-cvars2 = reidx(cvars2)
-temp_encode = []
-for col in cvars2.columns:
-    temp_encode.append(encode(cvars2[col]))
-encoded_covar = pd.concat(temp_encode, axis=1)
-encoded_covar = remove_redudant(encoded_covar)
-covars = pd.concat([cvars1, encoded_covar], axis=1)
-group_use = group_use.set_index('IID').loc[cvars.IID.ix[:, 0].values]
-group_use['IID'] = group_use.index.values
-group_use = group_use.drop_duplicates('IID').drop('IID', 1)
-id_check = np.all(group_use.index.values == cvars.IID.ix[:, 0].values)
-group_use = reidx(group_use)
-if not id_check:
-    print("IDs not the same")
+# will update later
 
 def y(g):
     return np.array([1. if i == 'Control' else 0. for i in g])
