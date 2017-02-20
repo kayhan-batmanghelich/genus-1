@@ -60,8 +60,8 @@ def int_gamma(logodds, alpha):
     return np.sum(left + right)
 
 def int_klbeta(alpha, mu, s, sa):
-    return (np.sum(alpha) + np.dot(alpha, np.log(s / sa)) - \
-            np.dot(alpha, s + mu**2) / sa) / 2 - \
+    return (np.sum(alpha) + np.dot(alpha, np.log(s / sa)).sum() - \
+            np.dot(alpha, s + mu**2).sum() / sa) / 2 - \
             np.dot(alpha, np.log(alpha + eps)) - \
             np.dot(1 - alpha, np.log(1 - alpha + eps))
 
@@ -72,3 +72,26 @@ def normalizelogweights(logw):
     c = np.max(logw)
     w = np.exp(logw - c)
     return w / w.sum()
+
+def cred(x, x0, w=None, cred_int = 0.95):
+    n = np.shape(x)[0]
+    if not w:
+        w = np.tile(1./n, n)
+    w = w / w.sum()
+    i, x = np.argsort(x), np.sort(x)
+    x = x[i]
+    w = w[i]
+    a = np.tile(np.arange(n), n).reshape(n, n)
+    b = a.T
+    i = np.where(a <= b)
+    a = a[i]
+    b = b[i]
+    i = np.where(x[a] <= x0 and x0 <= x[b])
+    a = a[i]
+    b = b[i]
+    p = np.cumsum(w)
+    i = np.where(p[b] - p[a] + w[a] >= cred_int)
+    a = a[i]
+    b = b[i]
+    i = np.argmin(x[b] - x[a])
+    return {'a': x[a[i]], 'b': x[b[i]]}
