@@ -57,30 +57,11 @@ def y(g):
 
 response = y(response['GROUP'].values)
 model_data = pd.concat([brain, encoded], axis = 1)
-split = StratifiedShuffleSplit(n_splits = 2, test_size=.25)
-train, test = split.split(model_data.values, response)
-
-training_result = logistic_tune(
-    X = model_data.values[train[0]],
-    y = response[train[0]],
-    splits = 8)
-
-column_overlaps = []
-for idx in range(len(training_result['coef'])):
-    column_overlaps.append(
-        list(get_nonzerocoef_cols(model_data.columns.values,
-                             training_result,
-                             'coef',
-                             idx)))
-
-column_overlaps = list(set(column_overlaps[0]).intersection(*column_overlaps))
-
-model_data_test = model_data[column_overlaps]
 
 def logistic_assess(X_train, y_train, X_test, y_test):
     clf = Pipeline([
         ('scale', StandardScaler()),
-        ('lgr', LogisticRegression())])
+        ('lgr', linear_model.LogisticRegression())])
     clf.fit(X_test, y_test)
     pred = clf.predict(X_test)
     result = {'auc':0, 'coef':[]}
@@ -88,9 +69,32 @@ def logistic_assess(X_train, y_train, X_test, y_test):
     result['coef'].append(clf.named_steps['lgr'].coef_)
     return result
 
-testing_result = logistic_assess(
-    X_train = model_data_test.values[train[0]],
-    y_train = response[train[0]],
-    X_test = model_data_test.values[test[1]],
-    y_test = response[test[1]]
- )
+split = StratifiedShuffleSplit(n_splits = 6, test_size=.2)
+results = {'auc': [], 'coef': []}
+
+for train, test in split.split(model_data.values, response):
+
+    training_result = logistic_tune(
+        X = model_data.values[train],
+        y = response[train],
+        splits = 6)
+
+    column_overlaps = []
+    for idx in range(len(training_result['coef'])):
+        column_overlaps.append(
+            list(get_nonzerocoef_cols(model_data.columns.values,
+                                 training_result,
+                                 'coef',
+                                 idx)))
+
+    column_overlaps = list(set(column_overlaps[0]).intersection(*column_overlaps))
+    model_data_test = model_data[column_overlaps]
+
+    testing_result = logistic_assess(
+        X_train = model_data_test.values[train],
+        y_train = response[train],
+        X_test = model_data_test.values[test],
+        y_test = response[test])
+
+    results['auc'].append(testing_result['auc'])
+    results['coef'].append(testing_result['coef'])
