@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.metrics import roc_auc_score
+from sklearn.feature_selection import f_classif
 from custom.custom import encode
 from custom.custom import remove_redudant
 from custom.custom import reidx
@@ -70,7 +71,7 @@ def logistic_assess(X_train, y_train, X_test, y_test):
     return result
 
 split = StratifiedShuffleSplit(n_splits = 6, test_size=.2)
-results = {'auc': [], 'coef': []}
+results = {'auc': [], 'coef': [], 'cols':[], 'fval': [], 'pval': []}
 
 for train, test in split.split(model_data.values, response):
 
@@ -96,5 +97,11 @@ for train, test in split.split(model_data.values, response):
         X_test = model_data_test.values[test],
         y_test = response[test])
 
+    fval, pval = f_classif(
+        model_data_test.values[test], response[test])
+
     results['auc'].append(testing_result['auc'])
     results['coef'].append(testing_result['coef'])
+    results['cols'].append(column_overlaps)
+    results['fval'].append(fval)
+    results['pval'].append(pval)
