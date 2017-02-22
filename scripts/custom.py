@@ -26,7 +26,7 @@ def genomic_preproc(data):
         data = np.array(data)
     mask = data != 3
     avg = np.true_divide((data * mask).sum(0), mask.sum(0))
-    return np.where(~maske, avg, data)
+    return np.where(~mask, avg, data)
 
 def demean_scale(data):
     if not isinstance(data, np.ndarray):
