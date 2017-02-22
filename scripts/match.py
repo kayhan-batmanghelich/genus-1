@@ -19,12 +19,17 @@ class Match(object):
         except IndexError:
             return False
         return True
-
+    
+    def check_type(self, x):
+        if isinstance(x, pd.DataFrame):
+            self.has_item(x)
+        else:
+            return False
+    
     def get_matching_ids(self, id_var, b, c, g):
         
         id_var_inter = self.inter([val.columns.values for val in (b, c, g) \
-                                  if self.has_item(val.columns.values) \
-                                   and isinstance(val, pd.DataFrame)])
+                                  if self.check_type(val.columns.values)])
         if not id_var_inter[0] == id_var:
             raise Exception("Some input data is missing ID variable")
         else:
