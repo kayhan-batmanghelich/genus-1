@@ -34,7 +34,7 @@ class Match(object):
             raise Exception("Some input data is missing ID variable")
         else:
             reduce_n = self.inter([val[id_var_inter[0]] for val in (b, c, g) \
-                                  if self.has_item(val[id_var_inter[0]].values)])
+                                  if self.check_type(val[id_var_inter[0]].values)])
             return reduce_n
 
     def load(self, data):
