@@ -1,11 +1,12 @@
 ## scripts:
 ### match.py
     from match import Match
-    b = 'brain/GENUS_FS_ATLAS_D.csv'
-    g = 'genomic/h5_100k_eur_combined.hdf'
-    c = 'cognitive/GENUS_neuropsych_data_Domain_Scores.csv'
-    m = Match(b, c, g, 'IID')
-    brain, cog, gene = Match.out()
+    # load your data first
+    b = pd.read_csv('brain/braindata.csv')
+    c = pd.read_csv('cog/cogdatacsv')
+    g = pd.read_hdf('gene/genedata.hdf)
+    m = Match('IID', [b,c,g])
+    brain, cog, gene = Match.fit()
 You will still have to test for duplicates
 * note that the index will be the ID
 
