@@ -3,7 +3,7 @@ import pandas as pd
 import magic
 
 class Match(object):
-    def __init__(self, brain, cognitive, genomic, id_var, sep = None):
+    def __init__(self, id_var, brain=[], cognitive=[], genomic=[],  sep = None):
         self.brain = brain
         self.cognitive = cognitive
         self.genomic = genomic
@@ -12,13 +12,22 @@ class Match(object):
 
     def inter(self, loi):
         return list(set(loi[0]).intersection(*loi))
+    
+    def has_item(self, x):
+        try:
+            x[0] 
+        except IndexError:
+            return False
+        return True
 
     def get_matching_ids(self, id_var, b, c, g):
-        id_var_inter = self.inter([val.columns.values for val in (b, c, g)])
+        id_var_inter = self.inter([val.columns.values for val in (b, c, g) \
+                                  if self.has_item(val.columns.values)])
         if not id_var_inter[0] == id_var:
             raise Exception("Some input data is missing ID variable")
         else:
-            reduce_n = self.inter([val[id_var_inter[0]] for val in (b, c, g)])
+            reduce_n = self.inter([val[id_var_inter[0]] for val in (b, c, g) \
+                                  if self.has_item(val[id_var_inter[0]].values)])
             return reduce_n
 
     def load(self, data):
