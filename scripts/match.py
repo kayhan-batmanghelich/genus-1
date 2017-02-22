@@ -15,7 +15,10 @@ class Match(object):
     
     def has_item(self, x):
         try:
-            x[0] 
+            if isinstance(x, pd.DataFrame):
+                pass
+            else:
+                x[0]
         except IndexError:
             return False
         return True
