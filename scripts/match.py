@@ -31,16 +31,19 @@ class Match(object):
             return reduce_n
 
     def load(self, data):
-        dl = magic.from_file(data)
-        print dl
-        if 'Hierarchical Data Format' in dl:
-            return pd.read_hdf(data)
-        elif 'ASCII' in dl:
-            if not self.sep:
-                return pd.read_csv(data, sep = self.sep)
-            return pd.read_csv(data)
-        elif 'Matlab' or 'mat-file' in dl:
-            return scipy.io.loadmat(data)
+        try:
+            dl = magic.from_file(data)
+            print dl
+            if 'Hierarchical Data Format' in dl:
+                return pd.read_hdf(data)
+            elif 'ASCII' in dl:
+                if not self.sep:
+                    return pd.read_csv(data, sep = self.sep)
+                return pd.read_csv(data)
+            elif 'Matlab' or 'mat-file' in dl:
+                return scipy.io.loadmat(data)
+        except TypeError:
+            pass
 
     def index(self, id_var, data, ids):
         return data.set_index(id_var, 1).loc[ids]
