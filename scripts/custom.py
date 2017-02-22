@@ -20,3 +20,10 @@ def remove_redudant(encoded):
 
 def get_nonzerocoef_cols(cols, dobj, idx_name, idx_num):
     return cols[np.nonzero(dobj[idx_name][idx_num])[1]]
+
+def genomic_preproc(data):
+    if not isinstance(data, np.ndarray):
+        data = np.array(data)
+    mask = data != 3
+    avg = np.true_divide((data * mask).sum(0), mask.sum(0))
+    return np.where(~maske, avg, data)
