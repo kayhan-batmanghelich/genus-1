@@ -6,8 +6,11 @@
     c = pd.read_csv('cog/cogdatacsv')
     g = pd.read_hdf('gene/genedata.hdf)
     m = Match('IID', [b,c,g])
-    brain, cog, gene = Match.fit()
-You will still have to test for duplicates
+    brain, cog, gene = m.fit()
+    # or
+    m = Match('IID', [c,g])
+    cog, gene = m.fit()
+    
 * note that the index will be the ID
 
 ### summary.py
