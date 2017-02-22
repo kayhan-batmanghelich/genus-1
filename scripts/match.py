@@ -1,74 +1,31 @@
 import numpy as np
 import pandas as pd
-import magic
 
 class Match(object):
-    def __init__(self, id_var, brain=[], cognitive=[], genomic=[],  sep = None):
-        self.brain = brain
-        self.cognitive = cognitive
-        self.genomic = genomic
+    def __init__(self, id_var, data):
+        self.data = data
         self.id_var = id_var
-        self.sep = sep
+
+    def check_input(self, input_list):
+        first_pass = lambda x: True if isinstance(x, pd.DataFrame) else False
+        return [item for item in input_list if first_pass(item)]
 
     def inter(self, loi):
         return list(set(loi[0]).intersection(*loi))
-    
-    def has_item(self, x):
-        try:
-            if isinstance(x, pd.DataFrame):
-                pass
-            else:
-                x[0]
-        except IndexError:
-            return False
-        return True
-    
-    def check_type(self, x):
-        if isinstance(x, pd.DataFrame):
-            self.has_item(x)
-        else:
-            return False
-    
-    def get_matching_ids(self, id_var, b, c, g):
-        
-        id_var_inter = self.inter([val.columns.values for val in (b, c, g) \
-                                  if self.check_type(val)])
-        if not id_var_inter[0] == id_var:
-            raise Exception("Some input data is missing ID variable")
-        else:
-            #reduce_n = self.inter([val[id_var_inter[0]] for val in (b, c, g) \
-            #                      if self.check_type(val[id_var_inter[0]].values)])
-            reduce_n = self.inter([val[id_var_inter[0]] for val in (b, c, g) \
-                                   if self.check_type(val)])
-            return reduce_n
 
-    def load(self, data):
-        try:
-            dl = magic.from_file(data)
-            print dl
-            if 'Hierarchical Data Format' in dl:
-                return pd.read_hdf(data)
-            elif 'ASCII' in dl:
-                if not self.sep:
-                    return pd.read_csv(data, sep = self.sep)
-                return pd.read_csv(data)
-            elif 'Matlab' or 'mat-file' in dl:
-                return scipy.io.loadmat(data)
-        except TypeError:
-            pass
+    def get_matching_ids(self, id_var, data):
+        data = self.check_input(data)
+        id_var = self.inter([i.columns.values for i in data])
+        return self.inter([d[id_var[0]].values for d in data ])
 
     def index(self, id_var, data, ids):
-        return data.set_index(id_var, 1).loc[ids]
-
-    def out(self):
-        data = {
-        'b': self.load(self.brain),
-        'c': self.load(self.cognitive),
-        'g': self.load(self.genomic)
-        }
-
-        ids = self.get_matching_ids(self.id_var, **data)
-
-        return (self.index(self.id_var, data['b'], ids),
-                self.index(self.id_var, data['c'], ids),
-                self.index(self.id_var, data['g'], ids))
+        data = data.set_index(id_var, 1).loc[ids]
+        data[id_var] = data.index.values
+        return data.drop_duplicates(id_var).drop(id_var, 1)
+        
+    def fit(self):
+        ids = self.get_matching_ids(self.id_var, self.data)
+        out = []
+        for data in self.data:
+            out.append(self.index(self.id_var, data, ids))
+        return out
