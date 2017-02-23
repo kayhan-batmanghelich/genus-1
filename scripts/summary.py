@@ -1,24 +1,13 @@
 import numpy as np
 import pandas as pd
+from collections import Counter
 
 class Summary(object):
-    def __init__(self, data, cols):
+    def __init__(self, data, columns):
         self.data = data
-        self.cols = cols
+        self.columns = columns
 
-    def amount(self):
-        locs = []
-        cols = {}
-        for i in self.data.columns:
-            if isinstance(i, (str, np.str)):
-                cols[i.lower()] = i
-            elif isinstance(i, (int, np.int, float, np.float64, np.float32)):
-                cols[i] = i
-        for idx, val in enumerate(self.data.columns):
-            if isinstance(i, (str, np.str)):
-                if val.lower() in self.cols:
-                    locs.append((val, idx))
-        slice = self.data[[i[1] for i in locs]]
-        li = [i for i in slice.values.flatten() if not pd.isnull(i)]
-        rd = {i:li.count(i) for i in li}
-        return rd
+    def count(self):
+        to_count = Counter(np.array([self.data[i].values for i in 
+                             self.columns]).flatten().tolist())
+        return {i: to_count[i] for i in to_count if not pd.isnull(i)}
