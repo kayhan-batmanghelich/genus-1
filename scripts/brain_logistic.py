@@ -10,6 +10,8 @@ from custom.custom import encode
 from custom.custom import remove_redudant
 from custom.custom import reidx
 from custom.custom import get_nonzerocoef_cols
+from collections import Counter
+from sklearn.manifold import TSNE
 
 # Loading and preprocessing
 data_columns = np.genfromtxt('genus/text_files_for_indexing/170_columns.txt', dtype=str)
@@ -97,11 +99,29 @@ for train, test in split.split(model_data.values, response):
         X_test = model_data_test.values[test],
         y_test = response[test])
 
-    fval, pval = f_classif(
-        model_data_test.values[test], response[test])
-
     results['auc'].append(testing_result['auc'])
     results['coef'].append(testing_result['coef'])
     results['cols'].append(column_overlaps)
-    results['fval'].append(fval)
-    results['pval'].append(pval)
+
+cols = [i for x in results['cols'] for i in x]
+counting = Counter(cols)
+counting = {i:counting[i] for i in counting}
+cols_set = list(set(cols))
+
+def tsne(data, n_comp=2):
+    vis = Pipeline([('scale', StandardScaler()),
+                    ('tsne', TSNE(n_components = n_comp,
+                                  n_iter = 5000))])
+    return vis.fit_transform(data)
+
+tsne_vis = [tsne(model_data[results['cols'][i]].values)
+            for i in range(len(results['cols']))]
+
+def multPlot(data, nimg, nrow, ncol, carr):
+    fig, axs = plt.subplots(nrow, ncol, figsize=(20, 8))
+    fig.subplots_adjust(hspace = .3, wspace = .3)
+    axs = axs.ravel()
+    for img in range(nimg):
+        axs[img].scatter(data[img][:, 0],
+                         data[img][:, 1],
+                         c=carr)
