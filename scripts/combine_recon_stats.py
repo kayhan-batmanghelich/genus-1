@@ -6,6 +6,7 @@ import pandas as pd
 def loadjson(x):
     with open(x) as data_file:
         data = json.load(data_file)
+    data_file.close()
     return data
 
 def return_df(sub_id, stat_file, fs_dir, fjson_obj):
