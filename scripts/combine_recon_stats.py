@@ -52,8 +52,7 @@ huge_data_frame = []
 for stat_file in headers.keys():
     print("DOING {}".format(stat_file))
     print("\n")
-    single_sub = return_df(opensubs.keys()[0],
-    stat_file, fs_dir, headers)
+    single_sub = return_df(opensubs.keys()[0], stat_file, fs_dir, headers)
     m = {i:[] for i in single_sub['StructName'].values}
 
     for sub in opensubs.keys():
