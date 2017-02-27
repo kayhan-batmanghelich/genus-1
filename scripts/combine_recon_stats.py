@@ -45,22 +45,27 @@ fs_dir = '/om/user/ysa/open_scz/scz_subjects_dir/{}/stats'
 
 # schiz = 1, control = 0
 open_neurosubs = [i for x in (os1, os2) for i in x]
-sub_type = lambda x, y: 0 if x in y else 1
-opensubs = {i: sub_type(i, os1) for i in open_neurosubs}
+cobre_subs = os.listdir('/om/user/ysa/open_scz/COBRE')
+#sub_type = lambda x, y: 0 if x in y else 1
+#opensubs = {i: sub_type(i, os1) for i in open_neurosubs}
+opensubs = [i for x in (open_neurosubs, cobre_subs) for i in x]
 
 huge_data_frame = []
 for stat_file in headers.keys():
     print("DOING {}".format(stat_file))
     print("\n")
-    single_sub = return_df(opensubs.keys()[0], stat_file, fs_dir, headers)
+    single_sub = return_df(opensubs[0], stat_file, fs_dir, headers)
     m = {i:[] for i in single_sub['StructName'].values}
 
-    for sub in opensubs.keys():
-        data = change_df(return_df(sub, stat_file, fs_dir, headers))
-        data['subid'] = [sub for i in range(data.shape[0])]
-        groups = data.groupby('StructName')
-        for name, group in groups:
-            m[name].append(group)
+    for sub in opensubs:
+        try:
+            data = change_df(return_df(sub, stat_file, fs_dir, headers))
+            data['subid'] = [sub for i in range(data.shape[0])]
+            groups = data.groupby('StructName')
+            for name, group in groups:
+                m[name].append(group)
+        except IOError:
+            pass
 
     for structure in m.keys():
         sdf = pd.concat(m[structure])
