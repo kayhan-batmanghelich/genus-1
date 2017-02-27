@@ -70,9 +70,10 @@ for stat_file in headers.keys():
     for structure in m.keys():
         sdf = pd.concat(m[structure])
         sdf = sdf.reset_index()
-        cols = [sdf['StructName'][0] + '_' + i for i in sdf.columns]
+        cols = [stat_file.split('.')[0] + '_' + sdf['StructName'][0] + '_' + i
+                for i in sdf.columns]
         sdf.columns = cols
-        sdf = sdf.drop(structure + '_' + 'StructName', 1)
+        sdf = sdf.drop(stat_file.split('.')[0] + '_' + structure + '_' + 'StructName', 1)
         sdf.to_csv('stats_dataframes/{}.csv'.format(structure), index=None)
         huge_data_frame.append(sdf)
 
