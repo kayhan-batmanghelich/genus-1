@@ -65,7 +65,7 @@ def logistic_assess(X_train, y_train, X_test, y_test):
     clf = Pipeline([
         ('scale', StandardScaler()),
         ('lgr', linear_model.LogisticRegression())])
-    clf.fit(X_test, y_test)
+    clf.fit(X_train, y_train)
     pred = clf.predict(X_test)
     result = {'auc':0, 'coef':[]}
     result['auc'] = roc_auc_score(y_test, pred)
