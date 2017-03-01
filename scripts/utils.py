@@ -8,8 +8,7 @@ class Summary(object):
         self.columns = columns
 
     def fit(self):
-        to_count = Counter(np.array([self.data[i].values for i in 
-                             self.columns]).flatten().tolist())
+        to_count = Counter(np.array([self.data[i].values for i in self.columns]).flatten().tolist())
         return {i: to_count[i] for i in to_count if not pd.isnull(i)}
 
 def encode(data):
