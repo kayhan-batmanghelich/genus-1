@@ -33,8 +33,7 @@ cobre_subs = os.listdir(cobre_dir)
 open_subs = [x for x in os.listdir(open_dir) if 'sub' in x]
 
 Iternode = pe.Node(niu.IdentityInterface(fields=['sub']), name='Iternode')
-Iternode.iterables = [('sub', [i for x in (cobre_subs, open_subs)
-                                for i in x])]
+Iternode.iterables = [('sub', [i for x in (cobre_subs, open_subs) for i in x])]
 
 wf = pe.Workflow(name='scz_recons')
 wf.connect(Iternode, 'sub', RunRecon, 'sub_id')
