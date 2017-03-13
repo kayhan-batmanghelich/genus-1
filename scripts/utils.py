@@ -2,22 +2,48 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 
+
+domain_scores = ('SOPdomainAvgZ', 'ATVIdomainAvgZ', 'VWMdomainAvgZ',
+        'NVWMdomainAvgZ', 'VLMdomainAvgZ', 'NVLMdomainAvgZ',
+        'RPSdomainAvgZ', 'VISPAdomainAvgZ')
+
+data_values = ('cog', 'gen', 'fam')
+
+def numeric_func_inter(x):
+    try:
+        x.astype(float)
+        return True
+    except:
+        return False
+
+def get_numeric_col_only(X):
+    if isinstance(X, pd.DataFrame): 
+        X = X.values
+    return map(numeric_func_inter,
+              [X[:, i] for i in range(X.shape[1])]) 
+
+def hdfload(path, dtype, key):
+    print("Returning train, test...")
+    train = pd.read_hdf(path, '{}_train_{}'.format(dtype, key))
+    test = pd.read_hdf(path, '{}_test_{}'.format(dtype, key))
+    return train, test
+
 class Summary(object):
     def __init__(self, data, columns):
         self.data = data
         self.columns = columns
 
     def fit(self):
-        to_count = Counter(np.array([self.data[i].values for i in self.columns]).flatten().tolist())
+        to_count = Counter(np.array([self.data[i].values for i in 
+                             self.columns]).flatten().tolist())
         return {i: to_count[i] for i in to_count if not pd.isnull(i)}
 
-def encode(data):
-    encoded_label = data.name
-    le = LabelEncoder()
-    ohe = OneHotEncoder()
-    temp_encode = le.fit_transform(data)
-    final_encode = ohe.fit_transform(temp_encode.reshape(-1,1)).toarray()
-    return pd.DataFrame(final_encode, columns = le.classes_)
+def encoder(X):
+    n = len(X)
+    uniq, inv = np.unique(X, return_inverse=True)
+    result = np.zeros((n, len(uniq)), dtype=float)
+    result[np.arange(n), inv] = 1
+    return result
 
 def remove_redudant(encoded):
     to_drop = []
