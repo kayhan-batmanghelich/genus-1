@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 
-
 domain_scores = ('SOPdomainAvgZ', 'ATVIdomainAvgZ', 'VWMdomainAvgZ',
         'NVWMdomainAvgZ', 'VLMdomainAvgZ', 'NVLMdomainAvgZ',
         'RPSdomainAvgZ', 'VISPAdomainAvgZ')
@@ -69,7 +68,7 @@ def demean_scale(data):
         data = np.array(data)
     copy = data.copy()
     copy = copy - copy.mean(0)
-    return copy * (1./copy.std(0))    
+    return copy / copy.std(0)    
     
 class Match(object):
     def __init__(self, id_var, data):
@@ -80,21 +79,27 @@ class Match(object):
         first_pass = lambda x: True if isinstance(x, pd.DataFrame) else False
         return [item for item in input_list if first_pass(item)]
 
+    def dropnans(self):
+        data_nonans = []
+        for data_type in self.data:
+            data_nonans.append(data_type.dropna(0))
+        return data_nonans
+
     def inter(self, loi):
         return list(set(loi[0]).intersection(*loi))
 
-    def get_matching_ids(self, id_var, data):
+    def get_matching_ids(self, data):
         data = self.check_input(data)
-        id_var = self.inter([i.columns.values for i in data])
-        return self.inter([d[id_var[0]].values for d in data ])
+        return self.inter([d[self.id_var].values for d in data ])
 
     def index(self, id_var, data, ids):
         data = data.set_index(id_var).loc[ids].reset_index()
         return data.drop_duplicates(subset=id_var).dropna()
         
     def fit(self):
-        ids = self.get_matching_ids(self.id_var, self.data)
+        new_data = self.dropnans()
+        ids = self.get_matching_ids(new_data)
         out = []
-        for data in self.data:
+        for data in new_data:
             out.append(self.index(self.id_var, data, ids))
         return out
