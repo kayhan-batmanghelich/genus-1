@@ -89,9 +89,8 @@ class Match(object):
         return self.inter([d[id_var[0]].values for d in data ])
 
     def index(self, id_var, data, ids):
-        data = data.set_index(id_var, 1).loc[ids]
-        data[id_var] = data.index.values
-        return data.drop_duplicates(id_var).drop(id_var, 1)
+        data = data.set_index(id_var).loc[ids].reset_index()
+        return data.drop_duplicates(subset=id_var).dropna()
         
     def fit(self):
         ids = self.get_matching_ids(self.id_var, self.data)
