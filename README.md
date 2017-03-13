@@ -12,9 +12,7 @@
     m = Match('IID', [c,g])
     cog, gene = m.fit()
     
-* note that the index will be the ID
-
-    from summary import Summary
+    from utils import Summary
     s = Summary(brain, ('group', 'sex'))
     results = s.amount()
 ```
