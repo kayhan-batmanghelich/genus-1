@@ -48,9 +48,11 @@ def encoder(X):
 def remove_redudant(encoded):
     to_drop = []
     for col in range(1, encoded.shape[1]):
-        if (encoded.ix[:, col - 1] + encoded.ix[:, col]).mean() == 1:
-            to_drop.append(encoded.columns[col])
-    return encoded.drop(to_drop,axis=1)
+        if (encoded[:, col - 1] + encoded[:, col]).mean() == 1:
+            to_drop.append(False)
+        else:
+            to_drop.append(True)
+    return encoded[:, to_drop]
 
 def get_nonzerocoef_cols(cols, dobj, idx_name, idx_num):
     return cols[np.nonzero(dobj[idx_name][idx_num])[1]]
