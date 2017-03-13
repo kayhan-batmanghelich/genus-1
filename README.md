@@ -1,6 +1,7 @@
 ## scripts:
-### match.py
-    from match import Match
+### utils.py
+/python 
+    from utils import Match
     # load your data first
     b = pd.read_csv('brain/braindata.csv')
     c = pd.read_csv('cog/cogdatacsv')
@@ -13,7 +14,7 @@
     
 * note that the index will be the ID
 
-### summary.py
+/python 
     from summary import Summary
     s = Summary(brain, ('group', 'sex'))
     results = s.amount()
