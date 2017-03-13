@@ -69,7 +69,7 @@ def demean_scale(data):
         data = np.array(data)
     copy = data.copy()
     copy = copy - copy.mean(0)
-    return copy / copy.std(0)    
+    return copy * (1./copy.std(0))    
     
 class Match(object):
     def __init__(self, id_var, data):
