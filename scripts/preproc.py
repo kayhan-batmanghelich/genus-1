@@ -80,8 +80,7 @@ def main():
         cmd_str = 'python pyPlink.py --bfile {} --out {} --outFormat hdf5'
         for sfile in files:
             cmd = cmd_str.format(
-                os.path.join(data_dir, sfile),
-                sfile + '_h5')
+                os.path.join(data_dir, sfile), sfile + '_h5')
             call(cmd)
         return None
 
