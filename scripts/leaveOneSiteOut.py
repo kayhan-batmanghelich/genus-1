@@ -1,4 +1,3 @@
-
 import os
 import numpy as np
 import pandas as pd
@@ -29,6 +28,11 @@ def ready_data(data):
     return data[datavars], y
 
 loso_data = {}
+
+brain_data = pd.concat([
+    data[tcols],
+    data[cvars]
+], axis=1).dropna().drop_duplicates('IID')
 
 groups = brain_data.groupby('STUDY')
 
