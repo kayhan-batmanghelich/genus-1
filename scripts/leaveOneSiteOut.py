@@ -51,3 +51,4 @@ clf = Pipeline([
 ])
 
 auc_scorer = make_scorer(roc_auc_score)
+scores = cross_val_score(clf, X=X, y=y, cv=logo, scoring=auc_scorer)
