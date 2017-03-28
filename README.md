@@ -14,5 +14,5 @@
     
     from utils import Summary
     s = Summary(brain, ('group', 'sex'))
-    results = s.amount()
+    results = s.fit()
 ```
