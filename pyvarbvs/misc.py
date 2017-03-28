@@ -65,10 +65,6 @@ def int_klbeta(alpha, mu, s, sa):
             np.dot(alpha, np.log(alpha + eps)) - \
             np.dot(1 - alpha, np.log(1 - alpha + eps))
 
-def int_linear(Xr, d, y, sigma, alpha, mu):
-    n = len(y)
-    return -n/2*np.log(2*pi*sigma)
-
 def betavar(p, mu, s):
     return p * (s + (1 - p) * mu**2)
 
@@ -99,3 +95,9 @@ def cred(x, x0, w=None, cred_int = 0.95):
     b = b[i]
     i = np.argmin(x[b] - x[a])
     return {'a': x[a[i]], 'b': x[b[i]]}
+
+def int_linear(Xr, d, y, sigma, alpha, mu):
+    n = len(y)
+    return -n/2*np.log(2*pi*sigma) - \
+            np.linalg.norm(y - Xr,ord=2)**2 / (2*sigma) - \
+            np.dot(d, betavar(alpha, mu, s))/(2*sigma)

@@ -35,7 +35,8 @@ def varbvsnormupdate(X, sigma, sa, logodds, xy, d, alpha0, Xr0, i):
     return {'alpha':alpha, 'mu':mu, 'Xr':Xr}
 
 def varbvsnorm(X, y, sigma, sa, logodds, alpha, mu, tol=1e-4, maxiter=1e4,
-               verbose=True, update_sa=True, n0=0, sa0=0):
+               verbose=True, update_sigma=True, update_sa=True, n0=0, sa0=0,
+               outer_iter=np.nan):
     n, p = X.shape
     xy = np.dot(y, X)
     d = misc.diagsq(X)
@@ -43,7 +44,7 @@ def varbvsnorm(X, y, sigma, sa, logodds, alpha, mu, tol=1e-4, maxiter=1e4,
     s = sa*sigma/(sa*d + 1)
     logw = np.zeros(maxiter)
     err = np.zeros(maxiter)
-    for iter in range(maxiter):
+    for itera in range(maxiter):
         alpha0 = alpha
         mu0 = mu
         s0 = s
@@ -63,4 +64,41 @@ def varbvsnorm(X, y, sigma, sa, logodds, alpha, mu, tol=1e-4, maxiter=1e4,
         Xr = out['Xr']
 
 
-        logw[iter] = misc.int_linear()
+        logw[itera] = misc.int_linear(Xr, d, y, sigma, alpha, mu, s) + \
+                     misc.int_gamma(logodds, alpha) + \
+                     misc.int_klbeta(alpha, mu, s, sigma*sa)
+
+        if update_sigma:
+            sigma = (np.linalg.norm(y - Xr,ord=2)**2 +
+            np.dot(d, misc.betavar(alpha, mu, s)) +
+            np.dot(alpha, (s + mu**2)/sa))/(n + np.sum(alpha))
+
+            s = sa * sigma / (sa*d + 1)
+
+        if update_sa:
+            sa = (sa0*n0 + np.dot(alpha, s + mu**2))/(n0 + sigma*np.sum(alpha))
+            s = sa * sigma / (sa*d +1)
+
+        err[itera] = np.max(np.abs(alpha - alpha0))
+        if verbose:
+            if np.isnan(outer_iter):
+                status = np.nan
+            else:
+                stats = print("{}".format(outer_iter))
+            # some logging functions...
+
+        if logw[itera] < logw0:
+            logw[itera] = logw0
+            err[itera] = 0
+            sigma = sigma0
+            sa = sa0
+            alpha = alpha0
+            mu = mu0
+            s = s0
+            break
+        elif err[iter] < tol:
+            break
+
+        return {'logw':logw[:itera], 'err':err[:itera],
+                'sigma':sigma, 'sa':sa, 'alpha':alpha,
+                'mu':mu, 's':s}
