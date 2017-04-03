@@ -1,6 +1,7 @@
 from __future__ import division
 import numpy as np
 import misc
+from scipy import stats
 
 def m_log_like(h):
     c = np.max(h)
@@ -103,7 +104,6 @@ def varbvsnorm(X, y, sigma, sa, logodds, alpha, mu, tol=1e-4, maxiter=1e4,
             'sigma':sigma, 'sa':sa, 'alpha':alpha,
             'mu':mu, 's':s}
 
-
 def varbvsnormindep(X, y, sigma, sa, logodds):
     s = s*sigma / (s*misc.diagsq(X) + 1)
     mu = s*np.dot(y, X) / sigma
@@ -146,3 +146,25 @@ def varbvsindep(fit, X, Z, y):
         s[:, i] = out["s"]
 
     return {"alpha": alpha, "mu":mu, "s":s}
+
+# there is an update_stats function that is a matlab function???? In the R version?
+
+def varbvscoefcred(fit, Vars=None, cred_int=0.95, nr=1000):
+    ns = len(fit["logw"])
+    if not Vars:
+        p = fit["alpha"].shape[0]
+        Vars = list(range(p))
+    else:
+        p = len(Vars)
+    w = misc.normalizelogweights(fit["logw"])
+    a = np.zeros(p)
+    b = np.zeros(p)
+
+    for i in range(p):
+        j = Vars[i]
+        k = np.random.choice(a=ns, size=nr, p=w, replace=True)
+        x = fit["mu"][j, k] + np.sqrt(fit["s"][j, k]) * np.random.standard_normal((nr,))
+        a[i] = stats.mstats.mquantiles(x, prob=.5 - cred_int/2)[0]
+        b[i] = stats.mstats.mquantiles(x, prob=.5 + cred_int/2)[0]
+
+    return {"a":a, "b":b}
