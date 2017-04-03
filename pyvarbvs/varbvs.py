@@ -54,7 +54,7 @@ def varbvsnorm(X, y, sigma, sa, logodds, alpha, mu, tol=1e-4, maxiter=1e4,
                 misc.int_gamma(logodds, alpha) + \
                 misc.int_klbeta(alpha, mu, s, simga*sa)
 
-        if iter % 2:
+        if itera % 2:
             i = range(p)
         else:
             i = range(p, 1)
@@ -99,6 +99,32 @@ def varbvsnorm(X, y, sigma, sa, logodds, alpha, mu, tol=1e-4, maxiter=1e4,
         elif err[iter] < tol:
             break
 
-        return {'logw':logw[:itera], 'err':err[:itera],
-                'sigma':sigma, 'sa':sa, 'alpha':alpha,
-                'mu':mu, 's':s}
+    return {'logw':logw[:itera], 'err':err[:itera],
+            'sigma':sigma, 'sa':sa, 'alpha':alpha,
+            'mu':mu, 's':s}
+
+def varbvsindep(fit, X, Z, y):
+    n, p = X.shape
+    ns = len(fit['logw'])
+    # some data shape checks...
+    if np.isnan(Z).mean() == 1:
+        Z = np.zeros((1, N))
+        Z = np.hstack((np.ones(N)[:, None], Z))
+    else:
+        Z = np.hstack((np.ones(N)[:, None], Z))
+    if np.any(np.isnan(y)):
+        raise Exception("y cannot have any missing values")
+    if fit['family'] == "gaussian":
+        if Z.shape[1] == 1:
+            X = X - misc.rep_row(X.mean(0), N)
+            y = y - y.mean()
+        else:
+            #y = y - Z * (np.dot(Z.T, Z) / (Z.T * y))
+            y = y - np.dot(Z, (np.dot(Z.T, Z) / np.dot(y, Z)))
+            X = X - np.dot(Z, (np.dot(Z.T, Z) / np.dot(Z.T, X)))
+
+    alpha = np.zeros((p, ns))
+    mu = np.zeros((p, ns))
+    s = np.zeros((p, ns))
+
+    
