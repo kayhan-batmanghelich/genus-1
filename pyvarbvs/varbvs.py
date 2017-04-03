@@ -168,3 +168,10 @@ def varbvscoefcred(fit, Vars=None, cred_int=0.95, nr=1000):
         b[i] = stats.mstats.mquantiles(x, prob=.5 + cred_int/2)[0]
 
     return {"a":a, "b":b}
+
+def varbvsbinzupdate(X, sa, logodds, stats, alpha0, mu0, Xr0, i):
+    N, P = X.shape
+    # functions to check inputs not created yet
+    alpha = alpha0
+    mu = mu0
+    Xr = Xr0
