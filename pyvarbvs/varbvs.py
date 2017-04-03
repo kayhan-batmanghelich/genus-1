@@ -103,6 +103,13 @@ def varbvsnorm(X, y, sigma, sa, logodds, alpha, mu, tol=1e-4, maxiter=1e4,
             'sigma':sigma, 'sa':sa, 'alpha':alpha,
             'mu':mu, 's':s}
 
+
+def varbvsnormindep(X, y, sigma, sa, logodds):
+    s = s*sigma / (s*misc.diagsq(X) + 1)
+    mu = s*np.dot(y, X) / sigma
+    alpha = misc.sigmoid(logodds + (np.log(s/(sa*sigma)) + mu**2/s)/2)
+    return {"alpha":alpha, "mu":mu, "s":s}
+
 def varbvsindep(fit, X, Z, y):
     n, p = X.shape
     ns = len(fit['logw'])
@@ -127,4 +134,15 @@ def varbvsindep(fit, X, Z, y):
     mu = np.zeros((p, ns))
     s = np.zeros((p, ns))
 
-    
+    for i in range(ns):
+        if fit["family"] == "gaussian":
+            # there is a "with" statment here in the R code...
+            # i think i might have to do fit["X"] instead of X and os on
+            out = varbvsnormindep(X, y, sigma[i], sa[i], np.log(10)*logodds[:, i])
+        elif fit["family"] == "binomial":
+            out = varbvsnormindep(X, Z, y eta[, :], sa[i], np.log(10)*logoods[:, i])
+        alpha[:, i] = out["alpha"]
+        mu[:, i] = out["mu"]
+        s[:, i] = out["s"]
+
+    return {"alpha": alpha, "mu":mu, "s":s}
