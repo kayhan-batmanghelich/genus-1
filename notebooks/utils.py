@@ -8,6 +8,10 @@ domain_scores = ('SOPdomainAvgZ', 'ATVIdomainAvgZ', 'VWMdomainAvgZ',
 
 data_values = ('cog', 'gen', 'fam')
 
+def proj(X , C):
+    P = np.eye(C.shape[0]) - C.dot(np.linalg.inv(C.T.dot(C))).dot(C.T)
+    return P.dot(X)
+
 def numeric_func_inter(x):
     try:
         x.astype(float)
