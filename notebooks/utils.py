@@ -8,6 +8,11 @@ domain_scores = ('SOPdomainAvgZ', 'ATVIdomainAvgZ', 'VWMdomainAvgZ',
 
 data_values = ('cog', 'gen', 'fam')
 
+def make_non_singular(X, tol = 1e-05):
+    Q, R = np.linalg.qr(X)
+    independent = np.where(np.abs(R.diagonal()) > tol)[0]
+    return X[:, independent]
+
 def proj(X , C):
     P = np.eye(C.shape[0]) - C.dot(np.linalg.inv(C.T.dot(C))).dot(C.T)
     return P.dot(X)
