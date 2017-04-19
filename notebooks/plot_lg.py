@@ -14,6 +14,7 @@ brain = Brain("fsaverage", "split", "inflated",
 import matplotlib.pyplot as plt
 import pickle
 from collections import Counter
+import pandas as pd
 
 def read_pickle(name):
     with open(name, "rb") as data:
