@@ -8,6 +8,12 @@ domain_scores = ('SOPdomainAvgZ', 'ATVIdomainAvgZ', 'VWMdomainAvgZ',
 
 data_values = ('cog', 'gen', 'fam')
 
+def itersection_tool(ifi, num):
+    idx = list(set(ifi[0]).intersection(*ifi))
+    if num:
+        return [data[np.in1d(data, idx)] for data in ifi]
+    return [[np.in1d(data, idx)] for data in ifi]
+
 def make_non_singular(X, tol = 1e-05):
     Q, R = np.linalg.qr(X)
     independent = np.where(np.abs(R.diagonal()) > tol)[0]
