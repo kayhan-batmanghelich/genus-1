@@ -1,61 +1,68 @@
-from nipype.interfaces.utility import Function
-import nipype.pipeline.engine as pe
-import nipype.interfaces.utility as niu
+import os
+import numpy as np
+from nipype import Function, Node, Workflow, IdentityInterface
 
-def run(infile, outfile, colnum):
+wf = Workflow(name='brain_bcv')
+wf.base_dir = "/om/user/ysa"
+
+Iternode = Node(IdentityInterface(fields=['col_idx', 'cv_idx']), name = 'Iternode')
+Iternode.iterables = [('col_idx', np.arange(170) + 1), ('cv_idx', np.arange(10) + 1)]
+
+def cv_maker(data_path, save_path):
+    import scipy.io
+    from sklearn.model_selection import StratifiedKFold
+    X = scipy.io.loadmat(data_path)['I']
+    y = scipy.io.loadmat(data_path)['response'][0]
+    cv = StratifiedKFold(n_splits=10, random_state=1)
+    train_idx, test_idx = {}, {}
+    for idx, (train, test) in enumerate(cv.split(X, y)):
+        train_idx['train_{}'.format(idx + 1)] = train + 1
+        test_idx['test_{}'.format(idx + 1)] = test + 1
+    scipy.io.savemat(save_path, mdict={"train":train_idx, "test":test_idx})
+    return save_path
+ 
+CV_maker = Node(interface=Function(
+    input_names = ['data_path', 'save_path'],
+    output_names = ['save_path'],
+    function = cv_maker
+), name = 'CV_maker')
+
+CV_maker.inputs.data_path = "/storage/gablab001/data/genus/brain_genomic_bayes/brain_gene.mat"
+CV_maker.inputs.save_path = "/storage/gablab001/data/genus/brain_genomic_bayes/cv_idxs.mat"
+
+def run_bayes(in_file, cv_file, cv_idx, col_idx, out_file):
+    import cPickle as pickle
+    import numpy as np
+    import os
     import nipype.interfaces.matlab as Matlab
-    import os
     def outnames(col, out):
-        return out + '{}.mat'.format(col)
+        return os.path.join(out, '{}.mat'.format(col))
+    col_names = np.genfromtxt("/storage/gablab001/data/genus/brain_genomic_bayes/170_columns.txt", dtype=str)
+    col_save_name = col_names[col_idx - 1] + "_{}_{}_BF".format(cv_idx, col_idx)
+    with open("/storage/gablab001/data/genus/brain_genomic_bayes/bayes_reg.m", "r") as src:
+        script = src.read().replace("\n", "")
+    mat_file = outnames(in_file[:-4] + col_save_name, out_file)
     matlab = Matlab.MatlabCommand()
-    matlab.inputs.paths = ['varbvs-MATLAB']
-    matlab.inputs.script = """
-    load('{}', 'I', 'G', 'Z', 'colnames');
-    G = single(G);
-    yI=I(:,{});
-    sigma=(0.2:0.08:1);
-    sa=(0.025:0.025:0.4);
-    fit=varbvs(G,Z,yI,colnames,[],struct('logodds',-5:0.25:-3));
-    w=normalizelogweights(fit.logw);
-    PIP=fit.alpha * w(:);
-    mu=fit.mu;
-    alpha=fit.alpha;
-    save('{}','PIP','w','alpha','mu');
-    """.format(infile, int(colnum), outnames(colnum, outfile))
+    matlab.inputs.paths = [
+    '/storage/gablab001/data/genus/current/variational_bayes_wrap/varbvs/varbvs-MATLAB',
+    '/storage/gablab001/data/genus/current/variational_bayes_wrap/varbvs',
+    '/storage/gablab001/data/genus/current/variational_bayes_wrap/varbvs/varbvs-R']
+    matlab.inputs.script = script.format(in_file, cv_file, cv_idx, col_idx, mat_file)
     res = matlab.run()
+    return mat_file
 
-Run = pe.Node(name = 'Run',
-	interface = Function(input_names = [
-		'infile', 'outfile', 'colnum'],
-	output_names = [''],
-	function = run))
+Run_bayes = Node(interface=Function(
+    input_names = ['in_file', 'cv_file', 
+                   'cv_idx', 'col_idx',
+                   'out_file'],
+    output_names = ['mat_file'],
+    function = run_bayes
+), name='Run_bayes')
 
-Iternode = pe.Node(niu.IdentityInterface(fields=['colnum']), name = 'Iternode')
+Run_bayes.inputs.in_file = "/storage/gablab001/data/genus/brain_genomic_bayes/brain_gene.mat"
+Run_bayes.inputs.out_file = "/storage/gablab001/data/genus/brain_genomic_bayes/"
 
-def csv(colnum, outfile):
-    import pandas as pd
-    import os
-    df = pd.DataFrame(columns=['colNum', 'matFn'])
-    for i in range(1, colnum):
-        df.loc[i] = [i, outfile+'{}.mat'.format(i)]
-    df.iloc[:,0] = df.iloc[:,0].astype(int)
-    df.to_csv('BFRESULTSFILELIST.csv', index=None)
-	
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--infile', type=str, help='input file and path')
-parser.add_argument('-o', '--outfile', type=str, help='output path and file')
-parser.add_argument('-c', '--cols', type=int, help='number of columns for brain regions')
-args = parser.parse_args()
-infile = args.infile
-outfile = args.outfile
-cols = args.cols
-csv(cols, outfile)
-Run.plugin_args = {'bsub_args': '-q big'}
-Run.inputs.outfile = outfile
-Run.inputs.infile = infile
-Iternode.iterables = [('colnum', [x for x in range(1, cols+1)])]
-wf = pe.Workflow(name='updated_bf')
-wf.connect(Iternode, 'colnum', Run, 'colnum')
-wf.base_dir = '/data/petryshen/yoel/variational_bayes_wrap/'
-wf.run(plugin='LSF', plugin_args={'bsub_args': '-q big'})
+wf.connect(CV_maker, 'save_path', Run_bayes, 'cv_file')
+wf.connect(Iternode, 'cv_idx', Run_bayes, 'cv_idx')
+wf.connect(Iternode, 'col_idx', Run_bayes, 'col_idx')
+wf.run(plugin='SLURM', plugin_args={'sbatch_args':'--mem=12G -t 3-23:00:00', 'max_jobs': 100})
