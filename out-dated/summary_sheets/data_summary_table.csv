@@ -1,0 +1,22 @@
+site(set: all),snp_neuropsych,snp_freesurfer,snp,freesurfer_neuropsych,snp_freesurfer_neuropsych,freesurfer,neuropsych,site_participants,no_freesurfer
+camh,181.0,178.0,202.0,182.0,170.0,191.0,257.0,mixed,10.0
+cati,697.0,,715.0,,,,722.0,patient_only,697.0
+cida,166.0,97.0,196.0,90.0,81.0,173.0,183.0,mixed,85.0
+cogs,484.0,,565.0,,,,509.0,patient_only,484
+deco,380.0,117.0,497.0,23.0,22.0,150.0,407.0,mixed,358.0
+gapl,,,256.0,,,,308.0,mixed,
+imhs,207.0,,210.0,111.0,,247.0,414.0,patient_only,207.0
+imh4,63.0,94.0,124.0,39.0,39.0,,147.0,patient_only,9.0
+lanr,61.0,59.0,77.0,61.0,58.0,63.0,64.0,control_only,3.0
+mcic,,,150.0,,,,206.0,mixed,
+mfs1,,,100.0,,,,,mixed,
+mts1,,,90.0,,,,80.0,mixed,
+nefs,135.0,148.0,235.0,167.0,127.0,229.0,200.0,mixed,8.0
+paco,1067.0,,1067.0,,,,1067.0,control_only,1067.0
+page,474.0,,483.0,,,,475.0,mixed,474.0
+phrs,50.0,12.0,55.0,11.0,10.0,117.0,56.0,control_only,40.0
+tcdn,980.0,132.0,1021.0,124.0,124.0,437.0,980.0,mixed,854.0
+umcu,465.0,425.0,504.0,710.0,396.0,812.0,820.0,mixed,69.0
+total(allsites),5410.0,1262.0,6547.0,1518.0,1027.0,2419.0,6075.0,mixed,4365.0
+total(siteswithbothgroups),2781.0,1097.0,3734.0,1296.0,920.0,1992.0,3096.0,,1858.0
+
