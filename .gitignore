@@ -1,0 +1,7 @@
+fs_cog/*.csv
+fs_cog/pred_diag/data_sets/*.csv
+fs_cog/pred_diag/data_sets/*.txt
+fs_cog/pred_diag/singularity/analysis_scripts/*.csv
+fs_cog/pred_diag/singularity/*.img
+fs_cog/pred_diag/lg/results/*.pkl
+fs_cog/pred_diag/extra_trees/results/*.pkl
