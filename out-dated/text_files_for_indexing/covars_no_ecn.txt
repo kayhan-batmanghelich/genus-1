@@ -1,3 +1,0 @@
-EstimatedTotalIntraCranialVol
-AGE_MRI
-SEX

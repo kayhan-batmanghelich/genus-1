@@ -1,5 +1,0 @@
-STUDY
-FID
-IID
-MRI_ID
-subj_id
