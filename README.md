@@ -42,5 +42,8 @@ class Logistic(BaseModel):
             prediction = clf.predict(X[test])
             self.res['coef'].append((idx, clf.named_steps['lg'].coef_[0]))
             self.res['auc'].append((idx, roc_auc_score(y[test], prediction)))
-       return self.fit_model(X, y)
+        
+        self.res['model'] = clf
+        output_saved = self.save_pickle(self.res, self.out)
+        return output_saved
 ```
