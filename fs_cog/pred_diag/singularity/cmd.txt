@@ -1,0 +1,1 @@
+singularity shell --bind /storage:/storage /storage/gablab001/data/genus/fs_cog/exp1/singularity/R.img 

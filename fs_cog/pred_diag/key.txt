@@ -1,0 +1,10 @@
+XBA: data matrix consists of brain, cog scores, covariates
+XBC: data matrix consists of brain, cog scores covariates not removed
+XBCCR: data matrix consists of brain, cog scores covariates effects removed by projection
+XC: data matrix consists of cog scores
+XCC: data matrix consists of cog scores and covariates
+XCCR: data matrix consists of cog scores covariates effects removed by projection
+XB: data matrix consists of brain data
+XBCOV: data mtarix consists of brain data and covariates
+XBCR: data matrix consists of brain data covariates effects removed by projection 
+
