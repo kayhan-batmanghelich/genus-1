@@ -5,11 +5,13 @@
 
 The models considered are:
 
-  XB    -   Freesurfer phenotypes
-  XC    -   Cognitive scores
-  XBC   -   Freesurfer phenotypes & cognitive scores
-  XBA   -   Freesurfer phenotypes & cognitive scores & covariates
-  XBCOV -   Freesurfer phenotypes & covariates
-  XCC   -   Cognitive ccores & covariates
-  XBCR  -   Freesurfer phenotypes with covariates projected out
-  XCCR  -   Cognitive Scores with covariates projected out 
+  |Model Variable| Features
+  |--------------|:--------------
+  |XB            | Freesurfer phenotypes
+  |XC            | Cognitive scores
+  |XBC           | Freesurfer phenotypes & cognitive scores
+  |XBA           | Freesurfer phenotypes & cognitive scores & covariates
+  |XBCOV         | Freesurfer phenotypes & covariates
+  |XCC           | Cognitive ccores & covariates
+  |XBCR          | Freesurfer phenotypes with covariates projected out
+  |XCCR          | Cognitive Scores with covariates projected out 
