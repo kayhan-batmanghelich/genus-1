@@ -15,3 +15,7 @@ The models considered are:
   |XCC           | Cognitive ccores & covariates
   |XBCR          | Freesurfer phenotypes with covariates projected out
   |XCCR          | Cognitive Scores with covariates projected out 
+
+
+### How the classification analysis are carried out
+In the <b>fs_cog/pred_diag</b> directory there is a <b>submit.py</b> file that uses a class <b>Mods</b>
