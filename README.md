@@ -18,7 +18,7 @@ The models considered are:
 
 
 ### How the classification analysis are carried out
-In the <b>fs_cog/pred_diag</b> directory there is a <b>submit.py</b> file that uses two classes one for logistic regression and another for fuzzy/extra trees. These live in the <b>Mods.py</b> file which in the <b>custom utils</b> in the anaconda environment created for this project. The two classifiers inherit from a base model that simply does some minimal checks on the data, here they are: 
+In the <b>fs_cog/pred_diag</b> directory there is a <b>submit.py</b> file that uses two classes one for logistic regression and another for fuzzy/extra trees. These live in the <b>Mods.py</b> file which in the <b>custom utils</b> in the anaconda environment created for this project. The two classifiers inherit from a base model that simply does some minimal checks on the data, here's the logistic regression classifier, the fuzzy/extra trees is similar though not exact: 
 
 ```python
 class Logistic(BaseModel):
