@@ -34,8 +34,8 @@ class SCCA:
         xy = partial_corr(self.X, self.Y)
         #xxi = np.linalg.inv(np.diagxx)
         #yyi = np.linalg.inv(yy)
-        xxi = np.diag(np.diag(xx))
-        yyi = np.diag(np.diag(yy))
+        xxi = np.linalg.inv(np.diag(np.diag(xx)))
+        yyi = np.linalg.inv(np.diag(np.diag(yy)))
         return np.dot(xxi, xy).dot(yyi)
 
     def _norm(self, w):
