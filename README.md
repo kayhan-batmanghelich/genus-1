@@ -2,7 +2,7 @@
 ## This repo only reflects two primary analysis, predicting diagnosis and variational bayes
 
 #### Preprocessing
-* Preprocessing is done on a "base" datafile which contains the concatenated Freesurfer phenotypes and cognitive domain scores. That dataset is much larger than the ones used for classification. 
+* Preprocessing is done on a "base" datafile which contains the concatenated Freesurfer phenotypes and cognitive domain scores. That dataset is much larger than the ones used for classification. <b>preprocess.py</b> in the <b>fs_cog/pred_diag</b> directory is the preprocessing script. 
 
 #### Analysis
 * The main results for predicting diagnosis are under the fs_cog directory. All results used an intersection of the freesurfer phenotypes and the 3 domain cognitive score(SOP, RPS, VLM) data. 9 "models" were considered for 2 classifiers - vanilla logistic regression with a sparsity inducing penalty (this is the linear classifier) and a fuzzy-trees classifier (non-linear classifier). The classifiers were chosen for the ability to 1.) reduce the dimension of the input data thus creating "interpretable results" and 2.) predict using the reduced matrix.
