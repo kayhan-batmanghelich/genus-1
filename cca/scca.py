@@ -69,4 +69,12 @@ class SCCA:
             if i > 100000:
                 break
 
-        return {'K':K, 'u':u, 'v':v, 'i':i}
+        self.K = K
+        self.u = u
+        self.v = v
+        self.i = i 
+       
+        return self
+
+     def predict(self, X_new):
+         pass
