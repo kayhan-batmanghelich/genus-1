@@ -1,0 +1,18 @@
+addpath(genpath('/storage/gablab001/data/genus/GIT/genus/bayes/matlab'));
+load('{}', 'I', 'G', 'colnames');
+load('{}', 'train', 'test');
+idxs=train.train_{};
+G=single(G);
+G=G(idxs, :);
+yI=I(:, {});
+yI=yI(idxs, :);
+sigma=(0.2:0.08:1);
+sa=(0.025:0.025:0.4);
+fit=varbvs(G,Z,yI,colnames,[],struct('logodds',-5:0.25:-3));
+w=normalizelogweights(fit.logw);
+PIP=fit.alpha * w(:);
+mu=fit.mu;
+alpha=fit.alpha;
+lnZ_weighted=fit.logw(:)'*w(:);
+lnZ=fit.logw;
+save('{}','PIP','w','alpha','mu','lnZ', 'lnZ_weighted');
