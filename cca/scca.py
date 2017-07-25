@@ -18,7 +18,7 @@ class SCCA:
     Reference: Parkhomenko et al.: Sparse Canonical Correlation Analysis
     This is a work in progress, not expected to work yet.
     """
-    def __init__(self, X, Y, c1=0.00005, c2=0.00005, lu=0.00025, lv=0.000005):
+    def __init__(self, X, Y, c1=0.00005, c2=0.00005, lu=0.0000025, lv=0.000005):
         self.X = mean_center_scale(X)
         self.Y = mean_center_scale(Y)
         self.p = np.shape(X)[1]
@@ -32,13 +32,15 @@ class SCCA:
         xx = partial_corr(self.X, self.X)
         yy = partial_corr(self.Y, self.Y)
         xy = partial_corr(self.X, self.Y)
-        xxi = np.linalg.inv(xx)
-        yyi = np.linalg.inv(yy)
+        #xxi = np.linalg.inv(np.diagxx)
+        #yyi = np.linalg.inv(yy)
+        xxi = np.diag(np.diag(xx))
+        yyi = np.diag(np.diag(yy))
         return np.dot(xxi, xy).dot(yyi)
 
     def _norm(self, w):
-        lengthw = np.linalg.norm(w)
-        return w/lengthw
+        lw=np.sqrt(np.dot(w, w))
+        return w/lw
 
     def _soft_thresh(self, w, t):
         if t == 'u':
@@ -51,12 +53,10 @@ class SCCA:
         u = np.random.sample(self.p)
         v = np.random.sample(self.q)
         K = self._K()
-
         i = 0
         
         while not (np.linalg.norm(u, ord=1) <= self.c1) and \
               not (np.linalg.norm(v, ord=1) <= self.c2):
-                
             u = np.dot(K, v)
             u = self._norm(u)
             u = self._soft_thresh(u, 'u')
@@ -66,7 +66,6 @@ class SCCA:
             v = self._soft_thresh(v, 'v')
             v = self._norm(v)
             i += 1
-            
             if i > 100000:
                 break
 
