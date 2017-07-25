@@ -1,5 +1,5 @@
 addpath(genpath('/storage/gablab001/data/genus/GIT/genus/bayes/matlab'));
-load('{}', 'I', 'G', 'colnames');
+load('{}', 'I', 'G', 'Z', 'colnames');
 load('{}', 'train', 'test');
 idxs=train.train_{};
 G=single(G);
