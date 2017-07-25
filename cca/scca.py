@@ -1,13 +1,11 @@
 import numpy as np
 
-def partial_corr(X, Y):
+def partial_cov(X, Y):
     n = X.shape[0]
     cX = X - np.sum(X, axis=0, keepdims=True) / n
     cY = Y - np.sum(Y, axis=0, keepdims=True) / n
     cov_XY = 1. / (n - 1) * np.dot(cX.T, cY)
-    var_X = 1. / (n - 1) * np.sum(cX**2, axis=0)
-    var_Y = 1. / (n - 1) * np.sum(cY**2, axis=0)
-    return cov_XY / np.sqrt(var_X[:, None] * var_Y[None, :])
+    return cov_XY 
 
 def mean_center_scale(x):
     x = x - x.mean(0)
@@ -18,7 +16,7 @@ class SCCA:
     Reference: Parkhomenko et al.: Sparse Canonical Correlation Analysis
     This is a work in progress, not expected to work yet.
     """
-    def __init__(self, X, Y, c1=0.00005, c2=0.00005, lu=0.0000025, lv=0.000005):
+    def __init__(self, X, Y, c1=0.01, c2=0.01, lu=0.00000001, lv=0.00000002):
         self.X = mean_center_scale(X)
         self.Y = mean_center_scale(Y)
         self.p = np.shape(X)[1]
@@ -29,13 +27,11 @@ class SCCA:
         self.lv = lv
 
     def _K(self):
-        xx = partial_corr(self.X, self.X)
-        yy = partial_corr(self.Y, self.Y)
-        xy = partial_corr(self.X, self.Y)
-        #xxi = np.linalg.inv(np.diagxx)
-        #yyi = np.linalg.inv(yy)
-        xxi = np.linalg.inv(np.diag(np.diag(xx)))
-        yyi = np.linalg.inv(np.diag(np.diag(yy)))
+        xy = partial_cov(self.X, self.Y)
+        xxi = np.linalg.inv(np.diag(np.diag(np.cov(X, rowvar=False))))
+        yyi = np.linalg.inv(np.diag(np.diag(np.cov(Y, rowvar=False))))
+        self.xinv = xxi
+        self.yinv = yyi
         return np.dot(xxi, xy).dot(yyi)
 
     def _norm(self, w):
@@ -68,13 +64,13 @@ class SCCA:
             i += 1
             if i > 100000:
                 break
-
+        
         self.K = K
         self.u = u
         self.v = v
-        self.i = i 
-       
-        return self
+        self.i = i
 
-     def predict(self, X_new):
-         pass
+        return self
+    
+    def predict(self, X_new):
+        pass
