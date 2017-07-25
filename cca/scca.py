@@ -55,8 +55,8 @@ class SCCA:
         K = self._K()
         i = 0
         
-        while not (np.linalg.norm(u, ord=1) <= self.c1) and \
-              not (np.linalg.norm(v, ord=1) <= self.c2):
+        while  (np.linalg.norm(u, ord=1) <= self.c1) and \
+               (np.linalg.norm(v, ord=1) <= self.c2):
             u = np.dot(K, v)
             u = self._norm(u)
             u = self._soft_thresh(u, 'u')
