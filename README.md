@@ -1,5 +1,5 @@
 # GENUS Exploratory Analysis Repo
-## This repo only reflects two primary analysis, predicting diagnosis and variational bayes
+## This repo reflects the primary explorartory analysis on the GENUS dataset
 
 #### Preprocessing
 * Preprocessing is done on a "base" datafile which contains the concatenated Freesurfer phenotypes and cognitive domain scores. That dataset is much larger than the ones used for classification. <b>preprocess.py</b> in the <b>fs_cog/pred_diag</b> directory is the preprocessing script. 
