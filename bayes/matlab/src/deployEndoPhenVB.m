@@ -25,12 +25,12 @@ function  deployEndoPhenVB(varargin)
             %  (*)  inputMat : [MANDATORY] .mat file is provided. The file should contain 'I' and 'G'
             %       variable
             %
-            %  (*)  sigma, sa, log10q :  [OPTIONAL] if any of the 'sigma', 'sa', 'log10q' is not provided.
+            %  (*)  sigma, sa, logodd :  [OPTIONAL] if any of the 'sigma', 'sa', 'logodd' is not provided.
             %       It uses the default variables:
             %       Defaults are:
             %           sigma = ( 0.2:0.08:1 )' ;
             %           sa     = (0.025:0.025:0.4)';
-            %           log10q = (-5:0.25:-3)';
+            %           logodd = (-5:0.25:-3)';
             %
             %  (*) a,b,c : [OPTIONAL] Values of Hyper-Hyper parameters. If not defined, it
             %      switches back to the default parameters.
@@ -46,33 +46,47 @@ function  deployEndoPhenVB(varargin)
             BFArgs = parseBFArguments(args) ;
             display('Arguments for Bayes Factor :') ;
             BFArgs
-            [w,alpha, mu , lnZ] = ...
-                varsimbvs(BFArgs.G,...
-                          BFArgs.I(:,BFArgs.colNum),...
-                          BFArgs.sigma, ...
-                          BFArgs.sa, ...
-                          BFArgs.log10q,...
-                          BFArgs.a, BFArgs.b, BFArgs.c);
+            %[w,alpha, mu , lnZ] = ...
+            %    varsimbvs(BFArgs.G,...
+            %              BFArgs.I(:,BFArgs.colNum),...
+            %              BFArgs.sigma, ...
+            %              BFArgs.sa, ...
+            %              BFArgs.log10q,...
+            %              BFArgs.a, BFArgs.b, BFArgs.c);
+                          
+            %fit=varbvs(G,Z,yI,colnames,[],struct('logodds',-5:0.25:-3)); 
+            %yoel% : the way you ran it (above line) is equivalent of running BFArgs.logodd = -5:0.25:-3 and leaving the rest as is
+                             
+            fit = varbvs(BFArgs.G,...
+                         ... %yoel% add Z here, this function should read that in somehow 
+                         BFArgs.I(:,BFArgs.colNum),...
+                         colnames,...
+                         BFArgs) ;
+            
+            w = fit.w ;
+            alpha = fit.PIP ;
+            lnZ_weighted = fit.logw ;
                       
-            save(args.outFile,'w','alpha', 'mu' , 'lnZ') ;        
+            %save(args.outFile,'w','alpha', 'mu' , 'lnZ') ;       
+            save(args.outFile,'w','alpha', 'mu' , 'lnZ_weighted') ;
             
-        case 'normalize'    
-            fprintf('Normalizing the Bayes Factor scores ...\n')  ;
-            
-            % Here is the list of possible inputs:
-            %  (*) inFile : [MADATORY]  input file. Either it is .mat file
-            %       or list of MATLAB file covering all parameters.
-            %
-            %  (*) outFile : [MANDATORY] .mat file saving output results 
-            
-            normArgs = parseNormalizeArguments(args) ;
-            lnZ_weighted = normArgs.lnZ(:)'*normArgs.w(:) ;
-            
-            if exist(args.outFile,'file') % if the file exists
-                save(args.outFile,'lnZ_weighted','-append') ;
-            else
-                save(args.outFile,'lnZ_weighted') ;
-            end
+        %case 'normalize'    
+        %    fprintf('Normalizing the Bayes Factor scores ...\n')  ;
+        %    
+        %    % Here is the list of possible inputs:
+        %    %  (*) inFile : [MADATORY]  input file. Either it is .mat file
+        %    %       or list of MATLAB file covering all parameters.
+        %    %
+        %    %  (*) outFile : [MANDATORY] .mat file saving output results 
+        %    
+        %    normArgs = parseNormalizeArguments(args) ;
+        %    lnZ_weighted = normArgs.lnZ(:)'*normArgs.w(:) ;
+        %    
+        %    if exist(args.outFile,'file') % if the file exists
+        %        save(args.outFile,'lnZ_weighted','-append') ;
+        %    else
+        %        save(args.outFile,'lnZ_weighted') ;
+        %    end
             
         case 'fxvb'
             fprintf('Running fixed-form variational Bayes ...\n')  ;
@@ -205,19 +219,19 @@ function BFArgs = parseBFArguments(args)
         BFArgs.sa     = (0.025:0.025:0.4)';
     end
     
-    % log10q
-    if isfield(args,'log10q')
+    % logodd
+    if isfield(args,'logodd')
         if isdeployed()
-            BFArgs.log10q = colon(sscanf(args.log10q,'%f:%f:%f')) ;
+            BFArgs.logodd = colon(sscanf(args.logodd,'%f:%f:%f')) ;
         else
-            BFArgs.log10q = args.log10q ;
+            BFArgs.logodd = args.logodd ;
         end
     else
         % default parameters
-        BFArgs.log10q = (-5:0.25:-3)';
+        BFArgs.logodd = (-5:0.25:-3)';
     end
-    [BFArgs.sigma , BFArgs.sa , BFArgs.log10q] = ...
-        ndgrid(BFArgs.sigma, BFArgs.sa, BFArgs.log10q);
+    [BFArgs.sigma , BFArgs.sa , BFArgs.logodd] = ...
+        ndgrid(BFArgs.sigma, BFArgs.sa, BFArgs.logodd);
     
     % a
     if isfield(args,'a')
