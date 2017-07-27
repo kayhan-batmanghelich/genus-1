@@ -52,3 +52,6 @@ class Logistic(BaseModel):
         output_saved = self.save_pickle(self.res, self.out)
         return output_saved
 ```
+
+## Variational Bayes
+There's a notebook inside <b>bayes/notebooks</b> called <b>variational_bayes</b> that holds both parts of this analyses. It starts from two hdf5 files, one containing sMRI data and another containing SNP data, they are already sorted by rows so that they ccorrespond. Visualizations for the outputs will be part of <b>.py</b> files since one of them requires another anaconda environment which does not have ipython or jupyter installed (and should not). That environment is specialized for the PySurfer module and because of Mayavi - it should not be altered in it's current state. 
