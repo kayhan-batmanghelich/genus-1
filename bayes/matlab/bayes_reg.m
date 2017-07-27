@@ -4,6 +4,7 @@ load('{}', 'train', 'test');
 idxs=train.train_{};
 G=single(G);
 G=G(idxs, :);
+Z=Z(idxs, :);
 yI=I(:, {});
 yI=yI(idxs, :);
 sigma=(0.2:0.08:1);
